@@ -37,11 +37,6 @@ param hubVirtualNetworkAddressSpace string = '10.200.0.0/24'
 @minLength(10)
 param hubVirtualNetworkAzureFirewallSubnetAddressSpace string = '10.200.0.0/26'
 
-@description('Optional. A /27 under the virtual network address space for our regional On-Prem Gateway. Defaults to 10.200.0.64/27')
-@maxLength(18)
-@minLength(10)
-param hubVirtualNetworkGatewaySubnetAddressSpace string = '10.200.0.64/27'
-
 @description('Optional. A /26 under the virtual network address space for regional Azure Bastion. Defaults to 10.200.0.128/26')
 @maxLength(18)
 @minLength(10)
@@ -294,12 +289,6 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-05-01' = {
         }
       }
       {
-        name: 'GatewaySubnet'
-        properties: {
-          addressPrefix: hubVirtualNetworkGatewaySubnetAddressSpace
-        }
-      }
-      {
         name: 'AzureBastionSubnet'
         properties: {
           addressPrefix: hubVirtualNetworkBastionSubnetAddressSpace
@@ -331,7 +320,7 @@ resource vnetHub_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-
 }
 
 // Allocate three IP addresses to the firewall
-var numFirewallIpAddressesToAssign = 3
+var numFirewallIpAddressesToAssign = 2
 resource pipsAzureFirewall 'Microsoft.Network/publicIPAddresses@2021-05-01' = [for i in range(0, numFirewallIpAddressesToAssign): {
   name: 'pip-fw-${location}-${padLeft(i, 2, '0')}'
   location: location
