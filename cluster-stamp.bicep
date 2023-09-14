@@ -1260,23 +1260,6 @@ resource paDisallowNamespaceUsage 'Microsoft.Authorization/policyAssignments@202
 
 // Resource Group Azure Policy Assignments - Resource Provider Policies
 
-// Applying the built-in 'Azure Kubernetes Service clusters should have Defender profile enabled' policy at the resource group level.
-resource paDefenderInClusterEnabled 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
-  name: guid(pdDefenderInClusterEnabledId, resourceGroup().id, clusterName)
-  location: 'global'
-  scope: resourceGroup()
-  properties: {
-    displayName: take('[${clusterName}] ${reference(pdDefenderInClusterEnabledId, '2021-06-01').displayName}', 120)
-    description: reference(pdDefenderInClusterEnabledId, '2021-06-01').description
-    policyDefinitionId: pdDefenderInClusterEnabledId
-    parameters: {
-      effect: {
-        value: 'Audit' // This policy (as of 1.0.2-preview) does not have a Deny option, otherwise that would be set here.
-      }
-    }
-  }
-}
-
 // Applying the built-in 'Azure Kubernetes Service Clusters should enable Azure Active Directory integration' policy at the resource group level.
 resource paAadIntegrationEnabled 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
   name: guid(pdAadIntegrationEnabledId, resourceGroup().id, clusterName)
@@ -1323,23 +1306,6 @@ resource paAzurePolicyEnabled 'Microsoft.Authorization/policyAssignments@2021-06
     parameters: {
       effect: {
         value: 'Audit'  // This policy (as of 1.0.2) does not have a Deny option, otherwise that would be set here.
-      }
-    }
-  }
-}
-
-// Applying the built-in 'Authorized IP ranges should be defined on Kubernetes Services' policy at the resource group level.
-resource paAuthorizedIpRangesDefined 'Microsoft.Authorization/policyAssignments@2021-06-01' = {
-  name: guid(pdAuthorizedIpRangesDefinedId, resourceGroup().id, clusterName)
-  location: 'global'
-  scope: resourceGroup()
-  properties: {
-    displayName: take('[${clusterName}] ${reference(pdAuthorizedIpRangesDefinedId, '2021-06-01').displayName}', 120)
-    description: reference(pdAuthorizedIpRangesDefinedId, '2021-06-01').description
-    policyDefinitionId: pdAuthorizedIpRangesDefinedId
-    parameters: {
-      effect: {
-        value: 'Audit'  // This policy (as of 2.0.1) does not have a Deny option, otherwise that would be set here.
       }
     }
   }
@@ -1874,7 +1840,6 @@ resource mc 'Microsoft.ContainerService/managedClusters@2023-02-02-preview' = {
     paAadIntegrationEnabled
     paAllowedExternalIPs
     paAllowedHostPaths
-    paAuthorizedIpRangesDefined
     paAzurePolicyEnabled
     paDisallowEndpointEditPermissions
     paDisallowNamespaceUsage
@@ -1888,7 +1853,6 @@ resource mc 'Microsoft.ContainerService/managedClusters@2023-02-02-preview' = {
     // Azure Resource Provider policies that we'd like to see in place before the cluster is deployed
     // They are not technically a dependency, but logically they would have existed on the resource group
     // prior to the existence of the cluster, so forcing that here.
-    paDefenderInClusterEnabled
     paAadIntegrationEnabled
     paLocalAuthDisabled
     paAzurePolicyEnabled
